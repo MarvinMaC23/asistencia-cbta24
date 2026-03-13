@@ -67,34 +67,40 @@ if docente_sel != "-- Seleccione --":
         submit = st.form_submit_button("✅ Guardar Reporte en la Nube")
         
         if submit:
-            # URL de respuesta del formulario (cambiamos 'viewform' por 'formResponse')
+            # URL de respuesta del formulario (IMPORTANTE: termina en formResponse)
             url_form = "https://docs.google.com/forms/d/e/1FAIpQLSehlNQl_dt7RQ15RucWI0J5LUPwX8YnhHh-JDcCZ8J90aOaXA/formResponse"
             
+            # Si no seleccionaste a nadie, registramos que el grupo estuvo completo
             if not faltas:
                 faltas_final = ["ASISTENCIA COMPLETA"]
             else:
                 faltas_final = faltas
 
             exito = True
-            for alumno in faltas_final:
-                # Mapeo de tus entries según el link que me pasaste
-                datos = {
-                    "entry.1302517964": str(date.today()), # Fecha
-                    "entry.848090664": alumno,             # Alumno
-                    "entry.1257791887": docente_sel,        # Docente
-                    "entry.1101725855": grupo_sel,          # Grupo
-                    "entry.1842755561": carrera_sel         # Carrera
-                }
-                
-                # Enviamos los datos de forma silenciosa
-                try:
-                    respuesta = requests.post(url_form, data=datos)
-                    if respuesta.status_code != 200:
+            
+            # Mostramos una barra de progreso mientras envía los datos
+            with st.spinner('Guardando registros en Google...'):
+                for alumno in faltas_final:
+                    # Estos IDs deben ser EXACTAMENTE los de tu enlace previo
+                    datos = {
+                        "entry.1302517964": str(date.today()), 
+                        "entry.848090664": alumno,             
+                        "entry.1257791887": docente_sel,        
+                        "entry.1101725855": grupo_sel,          
+                        "entry.1842755561": carrera_sel         
+                    }
+                    
+                    try:
+                        # Enviamos con un tiempo de espera (timeout) para evitar que se quede colgado
+                        r = requests.post(url_form, data=datos, timeout=10)
+                        if r.status_code != 200:
+                            exito = False
+                    except Exception as e:
+                        st.error(f"Error técnico: {e}")
                         exito = False
-                except:
-                    exito = False
             
             if exito:
-                st.success(f"✅ ¡Hecho! Se registraron {len(faltas)} inasistencias en el sistema central.")
+                st.success(f"✅ ¡Registros guardados con éxito en el sistema del CBTA 24!")
+                st.balloons() # Un pequeño festejo visual porque ya funcionó
             else:
-                st.error("❌ Hubo un problema al conectar con el servidor de Google.")
+                st.error("❌ Google rechazó la conexión. Revisa que el formulario acepte respuestas.")
