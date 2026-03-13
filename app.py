@@ -48,7 +48,7 @@ if docente_sel != "-- Seleccione --":
         faltas = []
         for index, row in lista_alumnos.iterrows():
             # Buscamos el nombre y el número de control de forma segura
-            nombre = row.get('NOMBRE COMPLETO', 'Sin Nombre')
+            nombre = row.get('Nombre Completo', 'Sin Nombre')
             # Intentamos buscar 'NO CONTROL' o 'NO. CONTROL'
             num_control = row.get('NO CONTROL', row.get('NO. CONTROL', 'S/N'))
             
