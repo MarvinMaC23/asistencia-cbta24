@@ -8,6 +8,11 @@ st.set_page_config(page_title="Asistencia CBTA 24", layout="wide")
 st.title("📊 Control de Asistencia - CBTA 24")
 
 # --- AQUÍ YA NO DEBE HABER NADA DE "conn = st.connection" ---
+st.set_page_config(
+    page_title="Asistencia CBTA 24",
+    page_icon="📊", # Puedes poner un emoji o el link de una imagen
+    layout="centered" # "centered" se ve mejor en celulares que "wide"
+)
 
 # 2. Cargar lista de alumnos desde el Excel de GitHub
 @st.cache_data
