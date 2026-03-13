@@ -60,7 +60,23 @@ if docente_sel != "-- Seleccione --":
         
         if btn_guardar:
             if faltas:
+                # Crear un pequeño resumen para descargar
+                reporte_df = pd.DataFrame({
+                    "Fecha": [date.today()] * len(faltas),
+                    "Alumno": faltas,
+                    "Docente": [docente_sel] * len(faltas),
+                    "Grupo": [grupo_sel] * len(faltas)
+                })
+                
                 st.warning(f"Se registraron {len(faltas)} inasistencias.")
-                st.write("Alumnos faltantes:", ", ".join(faltas))
+                
+                # Botón para descargar el reporte en CSV (se abre en Excel)
+                csv = reporte_df.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="⬇️ Descargar Reporte de Faltas",
+                    data=csv,
+                    file_name=f"Faltas_{grupo_sel}_{date.today()}.csv",
+                    mime="text/csv",
+                )
             else:
                 st.success("¡Asistencia completa! Todos presentes.")
