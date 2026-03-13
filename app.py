@@ -66,30 +66,34 @@ if docente_sel != "-- Seleccione --":
         submit = st.form_submit_button("✅ Guardar Reporte en la Nube")
         
         if submit:
-            # Crear el registro para la base de datos
-            # Si no hay faltas, se guarda un registro de 'Asistencia Completa'
+            # URL de respuesta del formulario (cambiamos 'viewform' por 'formResponse')
+            url_form = "https://docs.google.com/forms/d/e/1FAIpQLSehlNQl_dt7RQ15RucWI0J5LUPwX8YnhHh-JDcCZ8J90aOaXA/formResponse"
+            
             if not faltas:
                 faltas_final = ["ASISTENCIA COMPLETA"]
             else:
                 faltas_final = faltas
 
-            nuevos_datos = pd.DataFrame({
-                "Fecha": [str(date.today())] * len(faltas_final),
-                "Alumno": faltas_final,
-                "Docente": [docente_sel] * len(faltas_final),
-                "Grupo": [grupo_sel] * len(faltas_final),
-                "Carrera": [carrera_sel] * len(faltas_final)
-            })
-            
-            # Intentar subir a Google Sheets
-            try:
-                # Leemos lo que ya hay para no borrarlo (ttl=0 para datos frescos)
-                data_actual = conn.read(ttl=0)
-                data_final = pd.concat([data_actual, nuevos_datos], ignore_index=True)
+            exito = True
+            for alumno in faltas_final:
+                # Mapeo de tus entries según el link que me pasaste
+                datos = {
+                    "entry.1302517964": str(date.today()), # Fecha
+                    "entry.848090664": alumno,             # Alumno
+                    "entry.1257791887": docente_sel,        # Docente
+                    "entry.1101725855": grupo_sel,          # Grupo
+                    "entry.1842755561": carrera_sel         # Carrera
+                }
                 
-                # Actualizamos la hoja de cálculo
-                conn.update(data=data_final)
-                st.success(f"🚀 ¡Datos guardados! Se registraron {len(faltas)} inasistencias en la base de datos central.")
-            except Exception as e:
-                st.error(f"Error al guardar: {e}")
-                st.info("Asegúrate de haber configurado el link de Google Sheets en los Secrets de Streamlit.")
+                # Enviamos los datos de forma silenciosa
+                try:
+                    respuesta = requests.post(url_form, data=datos)
+                    if respuesta.status_code != 200:
+                        exito = False
+                except:
+                    exito = False
+            
+            if exito:
+                st.success(f"✅ ¡Hecho! Se registraron {len(faltas)} inasistencias en el sistema central.")
+            else:
+                st.error("❌ Hubo un problema al conectar con el servidor de Google.")
