@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import date
-from streamlit_gsheets import GSheetsConnection
 
 # 1. Configuración de la página
 st.set_page_config(page_title="Asistencia CBTA 24", layout="wide")
