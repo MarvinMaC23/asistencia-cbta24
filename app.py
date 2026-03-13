@@ -41,17 +41,26 @@ if docente_sel != "-- Seleccione --":
     st.info("Marque a los alumnos que NO asistieron:")
 
     # 4. Formulario de asistencia
+    st.subheader(f"Lista de Alumnos - {grupo_sel}")
+    st.info("Marque a los alumnos que NO asistieron:")
+
     with st.form("asistencia_form"):
-        # Creamos una lista de checkboxes
         faltas = []
         for index, row in lista_alumnos.iterrows():
-            check = st.checkbox(f"{row['NOMBRE COMPLETO']} ({row['NO CONTROL']})", key=index)
+            # Buscamos el nombre y el número de control de forma segura
+            nombre = row.get('NOMBRE COMPLETO', 'Sin Nombre')
+            # Intentamos buscar 'NO CONTROL' o 'NO. CONTROL'
+            num_control = row.get('NO CONTROL', row.get('NO. CONTROL', 'S/N'))
+            
+            check = st.checkbox(f"{nombre} (ID: {num_control})", key=index)
             if check:
-                faltas.append(index)
+                faltas.append(nombre)
         
         btn_guardar = st.form_submit_button("Guardar Inasistencias")
         
         if btn_guardar:
-            # Aquí actualizarías tu Excel o Base de Datos
-            st.success(f"Se registraron {len(faltas)} faltas para el día {date.today()}")
-            # Lógica para guardar en Excel (opcionalmente usando st.connection)
+            if faltas:
+                st.warning(f"Se registraron {len(faltas)} inasistencias.")
+                st.write("Alumnos faltantes:", ", ".join(faltas))
+            else:
+                st.success("¡Asistencia completa! Todos presentes.")
