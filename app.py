@@ -7,7 +7,9 @@ from datetime import date
 st.set_page_config(page_title="Asistencia CBTA 24", layout="wide")
 st.title("📊 Control de Asistencia - CBTA 24")
 
-# 3. Cargar lista de alumnos desde el Excel de GitHub
+# --- AQUÍ YA NO DEBE HABER NADA DE "conn = st.connection" ---
+
+# 2. Cargar lista de alumnos desde el Excel de GitHub
 @st.cache_data
 def load_data():
     return pd.read_excel("alumnos.xlsx")
