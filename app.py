@@ -7,13 +7,6 @@ from datetime import date
 st.set_page_config(page_title="Asistencia CBTA 24", layout="wide")
 st.title("📊 Control de Asistencia - CBTA 24")
 
-# 2. Conexión a Google Sheets (Base de datos central)
-# Recuerda configurar la URL en los 'Secrets' de Streamlit Cloud
-try:
-    conn = st.connection("gsheets", type=GSheetsConnection)
-except Exception as e:
-    st.error("Error de conexión a la base de datos. Verifica los Secrets.")
-
 # 3. Cargar lista de alumnos desde el Excel de GitHub
 @st.cache_data
 def load_data():
